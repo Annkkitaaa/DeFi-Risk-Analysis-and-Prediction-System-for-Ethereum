@@ -13,7 +13,16 @@ from ml_model.risk_model import RiskModel
 from visualization.dashboard import run_dashboard
 
 def main():
+    # Set the title and sidebar
+    st.set_page_config(page_title="DeFi Risk Analysis", page_icon="🔍")
     st.title("DeFi Risk Analysis and Prediction System")
+    
+    # Sidebar for navigation
+    st.sidebar.header("Navigation")
+    st.sidebar.text("Explore the functionalities:")
+    st.sidebar.markdown("[Data Collection](#collecting-ethereum-and-defi-data)")
+    st.sidebar.markdown("[Risk Prediction](#predict-risk-label)")
+    st.sidebar.markdown("[Dashboard](#generating-interactive-dashboard)")
 
     try:
         # Data Collection
@@ -31,7 +40,7 @@ def main():
             st.error("Failed to fetch DeFi data.")
             return
 
-        st.write(f"Latest Ethereum Block Number: {latest_block['number']}")
+        st.success(f"Latest Ethereum Block Number: {latest_block['number']}")
 
         # Data Processing
         st.write("### Processing Data")
@@ -45,20 +54,21 @@ def main():
         y = df['risk_label']
         accuracy = risk_model.train(X, y)
 
-        st.write(f"## Model Accuracy: {accuracy:.2f}")
+        st.success(f"## Model Accuracy: {accuracy:.2f}")
 
         # User Input for Prediction
         st.write("### Predict Risk Label")
-        market_cap = st.number_input("Enter Market Cap:", min_value=0.0)
-        total_volume = st.number_input("Enter Total Volume:", min_value=0.0)
-        volatility = st.number_input("Enter Volatility:", min_value=0.0)
+        st.info("Use the sliders below to input values for risk prediction:")
+        market_cap = st.number_input("Enter Market Cap:", min_value=0.0, format="%.2f")
+        total_volume = st.number_input("Enter Total Volume:", min_value=0.0, format="%.2f")
+        volatility = st.number_input("Enter Volatility:", min_value=0.0, format="%.2f")
 
         if st.button("Predict Risk"):
             # Prepare input data for prediction
             input_data = [[market_cap, total_volume, volatility]]
             prediction = risk_model.predict(input_data)
 
-            st.write(f"### Predicted Risk Label: {prediction[0]}")
+            st.success(f"### Predicted Risk Label: {prediction[0]}")
 
         # Streamlit Dashboard
         st.write("### Generating Interactive Dashboard")
