@@ -17,7 +17,7 @@ def main():
 
     try:
         # Data Collection
-        st.write("### Collecting Ethereum and DeFi Data...")
+        st.write("### Collecting Ethereum and DeFi Data")
         eth_collector = EthereumDataCollector('https://shape-mainnet.g.alchemy.com/v2/FxI_sgw7cJxy3yUMS1J2UN4U6K7exJX9')
         defi_collector = DefiDataCollector()
 
@@ -34,12 +34,12 @@ def main():
         st.write(f"Latest Ethereum Block Number: {latest_block['number']}")
 
         # Data Processing
-        st.write("### Processing Data...")
+        st.write("### Processing Data")
         df = DataProcessor.process_defi_data(defi_data)
         df = DataProcessor.calculate_risk_score(df)
 
         # Machine Learning Model
-        st.write("### Training Machine Learning Model for Risk Prediction...")
+        st.write("### Training Machine Learning Model for Risk Prediction")
         risk_model = RiskModel()
         X = df[['market_cap', 'total_volume', 'volatility']]
         y = df['risk_label']
@@ -61,7 +61,7 @@ def main():
             st.write(f"### Predicted Risk Label: {prediction[0]}")
 
         # Streamlit Dashboard
-        st.write("### Generating Interactive Dashboard...")
+        st.write("### Generating Interactive Dashboard")
         run_dashboard(df)
 
     except Exception as e:
