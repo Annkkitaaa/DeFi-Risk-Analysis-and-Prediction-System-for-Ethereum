@@ -3,6 +3,12 @@
 
 The **DeFi Risk Analysis and Prediction System** is a web application designed to collect, process, and analyze data from decentralized finance (DeFi) protocols and the Ethereum blockchain. The application leverages machine learning techniques to assess the risk levels of various DeFi assets and provide predictions based on user inputs.
 
+## Live Demo
+
+You can try the application live here:  
+**[Live Demo](https://defi-risk-analysis-and-prediction-system-for-ethereum.streamlit.app/#generating-interactive-dashboard)**
+
+
 ## Project Structure
 
 ```
