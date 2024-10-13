@@ -1,55 +1,64 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
-import numpy as np
+import plotly.express as px
+import plotly.graph_objects as go
 
-def run_dashboard(df):
-    st.write("## DeFi Protocol Data")
+@st.cache_data
+def load_data():
+    # Replace this with your actual data loading logic
+    df = pd.read_csv('your_data_file.csv')
+    df['market_cap'] = pd.to_numeric(df['market_cap'], errors='coerce')
+    df['risk_score'] = pd.to_numeric(df['risk_score'], errors='coerce')
+    return df
+
+def format_value(value):
+    if value >= 1e9:
+        return f'${value/1e9:.1f}B'
+    elif value >= 1e6:
+        return f'${value/1e6:.1f}M'
+    else:
+        return f'${value:.0f}'
+
+def run_dashboard():
+    st.title("DeFi Protocol Data Dashboard")
+
+    df = load_data()
+
+    if df.empty:
+        st.error("No data available. Please check your data source.")
+        return
+
+    st.write("## Data Overview")
     st.dataframe(df)
 
     st.write("## Dashboard Overview")
 
-    # Center-align the charts
-    col1, col2, col3 = st.columns([1, 3, 1])
-    
-    with col2:
-        # Risk Distribution
-        st.write("### Risk Distribution")
-        fig, ax = plt.subplots(figsize=(8, 6))
-        df['risk_label'].value_counts().plot(kind='pie', autopct='%1.1f%%', ax=ax)
-        ax.set_title("Risk Distribution")
-        st.pyplot(fig)
+    col1, col2 = st.columns(2)
 
-        # Top 10 Protocols by Market Cap
+    with col1:
+        st.write("### Risk Distribution")
+        risk_distribution = df['risk_label'].value_counts()
+        fig = px.pie(values=risk_distribution.values, names=risk_distribution.index, title="Risk Distribution")
+        st.plotly_chart(fig)
+
+    with col2:
         st.write("### Top 10 Protocols by Market Cap")
         top_10 = df.nlargest(10, 'market_cap')
-        fig, ax = plt.subplots(figsize=(10, 6))
-        bars = ax.bar(top_10['name'], top_10['market_cap'])
-        ax.set_xticklabels(top_10['name'], rotation=45, ha='right')
-        ax.set_ylabel('Market Cap (USD)')
-        
-        def format_value(value):
-            if value >= 1e9:
-                return f'${value/1e9:.1f}B'
-            elif value >= 1e6:
-                return f'${value/1e6:.1f}M'
-            else:
-                return f'${value:.0f}'
+        fig = go.Figure(data=[go.Bar(x=top_10['name'], y=top_10['market_cap'])])
+        fig.update_layout(
+            title="Top 10 Protocols by Market Cap",
+            xaxis_title="Protocol Name",
+            yaxis_title="Market Cap (USD)",
+            xaxis_tickangle=-45
+        )
+        fig.update_traces(text=[format_value(x) for x in top_10['market_cap']], textposition='outside')
+        st.plotly_chart(fig)
 
-        for bar in bars:
-            height = bar.get_height()
-            ax.text(bar.get_x() + bar.get_width()/2., height,
-                    format_value(height),
-                    ha='center', va='bottom', rotation=0, fontsize=8)
-        
-        plt.tight_layout()
-        st.pyplot(fig)
-
-        # Risk Score vs Market Cap
-        st.write("### Risk Score vs Market Cap")
-        fig, ax = plt.subplots(figsize=(8, 6))
-        ax.scatter(df['market_cap'], df['risk_score'])
-        ax.set_xlabel('Market Cap (USD)')
-        ax.set_ylabel('Risk Score')
-        plt.tight_layout()
-        st.pyplot(fig)
+    st.write("### Risk Score vs Market Cap")
+    fig = px.scatter(df, x='market_cap', y='risk_score', hover_data=['name'])
+    fig.update_layout(
+        title="Risk Score vs Market Cap",
+        xaxis_title="Market Cap (USD)",
+        yaxis_title="Risk Score"
+    )
+    st.plotly_chart(fig)
