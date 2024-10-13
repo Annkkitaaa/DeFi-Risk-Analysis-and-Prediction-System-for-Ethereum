@@ -1,0 +1,23 @@
+# Project Structure
+defi_risk_analysis/
+│
+├── data_collection/
+│   ├── __init__.py
+│   ├── ethereum_data.py
+│   └── defi_api.py
+│
+├── data_processing/
+│   ├── __init__.py
+│   └── processor.py
+│
+├── ml_model/
+│   ├── __init__.py
+│   └── risk_model.py
+│
+├── visualization/
+│   ├── __init__.py
+│   └── dashboard.py
+│
+├── main.py
+├── requirements.txt
+└── README.md

@@ -14,93 +14,143 @@ from data_processing.processor import DataProcessor
 from ml_model.risk_model import RiskModel
 from visualization.dashboard import run_dashboard
 
-# Set page config at the very beginning
-st.set_page_config(page_title="DeFi Risk Analysis", page_icon="🔍", layout="wide")
+def main():
+    # Set the theme to purple
+    st.set_page_config(
+        page_title="DeFi Risk Analysis",
+        page_icon="🔍",
+        layout="wide",
+        initial_sidebar_state="expanded",
+    )
 
-def set_purple_theme():
+    # Custom CSS for purple theme
     st.markdown("""
-        <style>
-        .stApp {
-            background-color: #f0e6ff;
-        }
-        .stButton>button {
-            background-color: #8a2be2;
-            color: white;
-        }
-        .stTextInput>div>div>input {
-            background-color: #e6d9ff;
-        }
-        .stSelectbox>div>div>select {
-            background-color: #e6d9ff;
-        }
-        h1, h2, h3 {
-            color: #4b0082;
-        }
-        </style>
+    <style>
+    .stApp {
+        background-color: #f3e5f5;
+    }
+    .stButton>button {
+        background-color: #9c27b0;
+        color: white;
+    }
+    .stProgress .st-bo {
+        background-color: #9c27b0;
+    }
+    </style>
     """, unsafe_allow_html=True)
 
-def main():
-    set_purple_theme()
-    st.title("🔍 DeFi Risk Analysis and Prediction System")
+    st.title("🔮 DeFi Risk Analysis and Prediction System")
 
     # Sidebar for navigation
     st.sidebar.header("Navigation")
-    st.sidebar.markdown("""
-        - [Data Collection](#data-collection)
-        - [Risk Prediction](#risk-prediction)
-        - [Interactive Dashboard](#interactive-dashboard)
+    st.sidebar.text("Explore the functionalities:")
+    st.sidebar.markdown("[Data Collection](#collecting-ethereum-and-defi-data)")
+    st.sidebar.markdown("[Risk Prediction](#predict-risk-label)")
+    st.sidebar.markdown("[Dashboard](#generating-interactive-dashboard)")
+
+    # Introduction
+    st.write("""
+    ## 📊 Welcome to the DeFi Risk Analysis Dashboard
+    
+    This application analyzes and predicts risk in DeFi (Decentralized Finance) protocols. 
+    We collect data from Ethereum blockchain and DeFi APIs, process it, and use machine 
+    learning to predict risk levels.
     """)
 
-    st.markdown("This app provides a comprehensive risk analysis of DeFi protocols using real-time Ethereum and DeFi data, combined with machine learning to predict risk levels.")
-
     try:
-        # Section 1: Data Collection
-        st.header("Data Collection")
+        # Data Collection
+        st.header("🔗 Collecting Ethereum and DeFi Data")
+        st.write("""
+        We collect data from two main sources:
+        1. Ethereum blockchain using Alchemy API
+        2. DeFi protocols using CoinGecko API
+        
+        This data forms the foundation of our analysis.
+        """)
+
         eth_collector = EthereumDataCollector('https://shape-mainnet.g.alchemy.com/v2/FxI_sgw7cJxy3yUMS1J2UN4U6K7exJX9')
         defi_collector = DefiDataCollector()
 
-        latest_block = eth_collector.get_latest_block()
+        with st.spinner("Fetching latest Ethereum block..."):
+            latest_block = eth_collector.get_latest_block()
         if latest_block is None:
             st.error("Failed to fetch the latest Ethereum block.")
             return
 
-        defi_data = defi_collector.get_defi_data()
+        with st.spinner("Fetching DeFi data..."):
+            defi_data = defi_collector.get_defi_data()
         if defi_data is None:
             st.error("Failed to fetch DeFi data.")
             return
 
-        st.success(f"✅ Latest Ethereum Block Number: {latest_block['number']}")
+        st.success(f"Latest Ethereum Block Number: {latest_block['number']}")
 
-        # Section 2: Data Processing
-        st.header("Data Processing")
-        df = DataProcessor.process_defi_data(defi_data)
-        df = DataProcessor.calculate_risk_score(df)
-        st.success("✅ Data processed successfully")
+        # Data Processing
+        st.header("🔬 Processing Data")
+        st.write("""
+        We process the collected data to calculate risk scores. The risk score is determined by:
+        
+        1. Volatility (40% weight): Measures price fluctuations
+        2. Volume to Market Cap ratio (60% weight): Indicates liquidity and trading activity
+        
+        Risk Score Formula:
+        ```
+        Risk Score = (Volatility * 0.4 + (Total Volume / Market Cap) * 0.6) * 100
+        ```
+        
+        Risk Labels:
+        - Low: 0-33
+        - Medium: 34-66
+        - High: 67-100
+        """)
 
-        # Section 3: Risk Prediction
-        st.header("Risk Prediction")
+        with st.spinner("Processing data..."):
+            df = DataProcessor.process_defi_data(defi_data)
+            df = DataProcessor.calculate_risk_score(df)
+
+        # Machine Learning Model
+        st.header("🤖 Training Machine Learning Model")
+        st.write("""
+        We use a Random Forest Classifier to predict risk labels based on:
+        - Market Cap
+        - Total Volume
+        - Volatility
+
+        The model is trained on 80% of the data and tested on the remaining 20%.
+        """)
+
         risk_model = RiskModel()
         X = df[['market_cap', 'total_volume', 'volatility']]
         y = df['risk_label']
-        accuracy = risk_model.train(X, y)
-        st.success(f"✅ Model Accuracy: **{accuracy:.2f}**")
+        
+        with st.spinner("Training model..."):
+            accuracy = risk_model.train(X, y)
 
-        st.subheader("Predict Risk Label")
+        st.success(f"Model Accuracy: {accuracy:.2f}")
+
+        # User Input for Prediction
+        st.header("🔮 Predict Risk Label")
+        st.info("Use the sliders below to input values for risk prediction:")
+        
         col1, col2, col3 = st.columns(3)
         with col1:
-            market_cap = st.number_input("Market Cap (USD)", min_value=0.0, format="%.2f")
+            market_cap = st.number_input("Market Cap ($):", min_value=0.0, format="%.2f")
         with col2:
-            total_volume = st.number_input("Total Volume (USD)", min_value=0.0, format="%.2f")
+            total_volume = st.number_input("Total Volume ($):", min_value=0.0, format="%.2f")
         with col3:
-            volatility = st.number_input("Volatility (0-1)", min_value=0.0, max_value=1.0, format="%.2f")
+            volatility = st.number_input("Volatility (0-1):", min_value=0.0, max_value=1.0, format="%.2f")
 
         if st.button("Predict Risk"):
             input_data = [[market_cap, total_volume, volatility]]
             prediction = risk_model.predict(input_data)
-            st.success(f"Predicted Risk Label: **{prediction[0]}**")
+            st.success(f"Predicted Risk Label: {prediction[0]}")
 
-        # Section 4: Interactive Dashboard
-        st.header("Interactive Dashboard")
+        # Streamlit Dashboard
+        st.header("📊 Interactive Dashboard")
+        st.write("""
+        Explore the visualizations below to gain insights into the DeFi market and risk distribution.
+        """)
+        
         run_dashboard(df)
 
     except Exception as e:
