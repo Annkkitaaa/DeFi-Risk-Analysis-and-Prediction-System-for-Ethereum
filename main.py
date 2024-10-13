@@ -15,7 +15,7 @@ from ml_model.risk_model import RiskModel
 from visualization.dashboard import run_dashboard
 
 def main():
-    # Set the theme to purple
+    # Set the theme to be responsive to system preferences
     st.set_page_config(
         page_title="DeFi Risk Analysis",
         page_icon="🔍",
@@ -23,12 +23,35 @@ def main():
         initial_sidebar_state="expanded",
     )
 
-    # Custom CSS for purple theme
+    # Custom CSS for both light and dark modes
     st.markdown("""
     <style>
+    /* Light mode styles */
     .stApp {
         background-color: #f3e5f5;
+        color: #333333;
     }
+    
+    /* Dark mode styles */
+    @media (prefers-color-scheme: dark) {
+        .stApp {
+            background-color: #2d1e2f;
+            color: #ffffff;
+        }
+        .stButton>button {
+            background-color: #9c27b0;
+            color: white;
+        }
+        .stProgress .st-bo {
+            background-color: #9c27b0;
+        }
+        /* Ensure text is visible in dark mode */
+        p, h1, h2, h3, h4, h5, h6, li, .stMarkdown {
+            color: #ffffff !important;
+        }
+    }
+    
+    /* Styles for both modes */
     .stButton>button {
         background-color: #9c27b0;
         color: white;
