@@ -8,6 +8,14 @@ The **DeFi Risk Analysis and Prediction System** is a web application designed t
 You can try the application live here:  
 **[Live Demo](https://defi-risk-analysis-and-prediction-system-for-ethereum.streamlit.app/#generating-interactive-dashboard)**
 
+![image](https://github.com/user-attachments/assets/a092506e-20a5-4c06-8de7-82defca53504)
+
+![image](https://github.com/user-attachments/assets/e5dee884-bb45-414f-9258-73b1431861f9)
+![image](https://github.com/user-attachments/assets/c48107c0-58d1-4bba-89ab-3bcaa1feaa5c)
+
+
+
+
 
 ## Project Structure
 
