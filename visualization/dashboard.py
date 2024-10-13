@@ -3,14 +3,6 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 
-@st.cache_data
-def load_data():
-    # Replace this with your actual data loading logic
-    df = pd.read_csv('your_data_file.csv')
-    df['market_cap'] = pd.to_numeric(df['market_cap'], errors='coerce')
-    df['risk_score'] = pd.to_numeric(df['risk_score'], errors='coerce')
-    return df
-
 def format_value(value):
     if value >= 1e9:
         return f'${value/1e9:.1f}B'
@@ -19,10 +11,8 @@ def format_value(value):
     else:
         return f'${value:.0f}'
 
-def run_dashboard():
+def run_dashboard(df):
     st.title("DeFi Protocol Data Dashboard")
-
-    df = load_data()
 
     if df.empty:
         st.error("No data available. Please check your data source.")

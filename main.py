@@ -69,7 +69,7 @@ def main():
     st.sidebar.text("Explore the functionalities:")
     st.sidebar.markdown("[Data Collection](#collecting-ethereum-and-defi-data)")
     st.sidebar.markdown("[Risk Prediction](#predict-risk-label)")
-    st.sidebar.markdown("[Dashboard](#generating-interactive-dashboard)")
+    st.sidebar.markdown("[Dashboard](#interactive-dashboard)")
 
     # Introduction
     st.write("""
