@@ -8,21 +8,24 @@ def run_dashboard(df):
     st.dataframe(df)
 
     st.write("## Dashboard Overview")
-    col1, col2, col3 = st.columns(3)
 
-    with col1:
+    # Center-align the charts
+    col1, col2, col3 = st.columns([1, 3, 1])
+    
+    with col2:
+        # Risk Distribution
         st.write("### Risk Distribution")
-        fig, ax = plt.subplots(figsize=(4, 4))
+        fig, ax = plt.subplots(figsize=(8, 6))
         df['risk_label'].value_counts().plot(kind='pie', autopct='%1.1f%%', ax=ax)
         ax.set_title("Risk Distribution")
         st.pyplot(fig)
 
-    with col2:
-        st.write("### Top 5 Protocols by Market Cap")
-        top_5 = df.nlargest(5, 'market_cap')
-        fig, ax = plt.subplots(figsize=(5, 4))
-        bars = ax.bar(top_5['name'], top_5['market_cap'])
-        ax.set_xticklabels(top_5['name'], rotation=45, ha='right')
+        # Top 10 Protocols by Market Cap
+        st.write("### Top 10 Protocols by Market Cap")
+        top_10 = df.nlargest(10, 'market_cap')
+        fig, ax = plt.subplots(figsize=(10, 6))
+        bars = ax.bar(top_10['name'], top_10['market_cap'])
+        ax.set_xticklabels(top_10['name'], rotation=45, ha='right')
         ax.set_ylabel('Market Cap (USD)')
         
         def format_value(value):
@@ -42,9 +45,9 @@ def run_dashboard(df):
         plt.tight_layout()
         st.pyplot(fig)
 
-    with col3:
+        # Risk Score vs Market Cap
         st.write("### Risk Score vs Market Cap")
-        fig, ax = plt.subplots(figsize=(5, 4))
+        fig, ax = plt.subplots(figsize=(8, 6))
         ax.scatter(df['market_cap'], df['risk_score'])
         ax.set_xlabel('Market Cap (USD)')
         ax.set_ylabel('Risk Score')
